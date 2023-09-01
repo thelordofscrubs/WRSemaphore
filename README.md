@@ -1,42 +1,57 @@
 # WRSemaphore
-WRSemaphore is a semaphore class that allows multiple simultaneous reads, while also preferring writes.
-Any thread that calls the attempt_write() function will be given priority over any incoming read attempts, and will wait for current readers to finish reading.
-Any thread calling attempt_read() will be given instant access in the event that no other thread is in the critical region, or in the event that only readers are currently granted access (and that no writers are waiting)
 
-# Usage
+## Overview
 
-The class is used somewhat similarly to the basic mutex lock_guard, albeit with some additional steps.
+WRSemaphore is a semaphore class designed to allow multiple simultaneous reads while giving priority to write operations. Threads calling `attempt_write()` will be prioritized over incoming read attempts and will wait for current readers to finish.
 
-The basic use case is as follows:
+## Features
 
+- **Multiple Reads**: Allows multiple threads to read simultaneously.
+- **Write Priority**: Prioritizes write operations over read operations.
+- **Thread-Safe**: Ensures that only one thread can write to the shared memory at a time.
+
+## Usage
+
+### Basic Use Case
+
+The class is used in a manner similar to the basic mutex `lock_guard`, but with some additional steps. Here's a basic example:
+
+```cpp
 WRSemaphore shared_semaphore;
+```
 
-Thread 1:
-    //non cross thread code
-    shared_semaphore_pointer->attempt_write()
-    //write to memory shared between threads ---- When this thread is in the critical region, no other thread can read or write using the same semaphore
-    shared_semaphore_pointer->done_write()
+#### Thread 1 (Write Operation)
 
-Thread 2:
-    //non cross thread code
-    shared_semaphore_pointer->attempt_read()
-    //read memory that other threads write to
-    shared_semaphore_pointer->done_read()
+```cpp
+// Non-cross-thread code
+shared_semaphore_pointer->attempt_write();
+// Write to shared memory
+shared_semaphore_pointer->done_write();
+```
 
-Thread 3:
-    //non cross thread code
-    shared_semaphore_pointer->attempt_read()
-    //read memory that other threads write to
-    shared_semaphore_pointer->done_read()
+#### Thread 2 (Read Operation)
 
+```cpp
+// Non-cross-thread code
+shared_semaphore_pointer->attempt_read();
+// Read shared memory
+shared_semaphore_pointer->done_read();
+```
 
-Note that Threads 2 and 3 can read simoultaneously, this is by design. This form of mutual exclusion is intended for applications where you have frequent reads, and *in*frequent writes.
+#### Thread 3 (Read Operation)
 
-In the event that a reading thread is still within the critical region, and a write thread calls attempt_write(), any further read attempts will be blocked until the write is finished. This way, in the event of a continuous stream of read attempts, write attempts are still able (and given priority) to access the data.
+```cpp
+// Non-cross-thread code
+shared_semaphore_pointer->attempt_read();
+// Read shared memory
+shared_semaphore_pointer->done_read();
+```
 
+### Notes
 
+- Threads 2 and 3 can read simultaneously; this is by design.
+- This form of mutual exclusion is intended for applications with frequent reads and *in*frequent writes.
 
+### Write Priority
 
-
-# Credit
-Eli Kaituri and Conner Sutton
+If a reading thread is still within the critical region and a write thread calls `attempt_write()`, any further read attempts will be blocked until the write is complete. This ensures that write operations are not starved and can access the data even in a high-read environment.
