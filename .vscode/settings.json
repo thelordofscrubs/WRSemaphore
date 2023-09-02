@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "*.json": "json",
-        "mutex": "cpp",
-        "atomic": "cpp"
-    }
-}
