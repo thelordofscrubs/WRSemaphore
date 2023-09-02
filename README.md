@@ -16,7 +16,7 @@ WRSemaphore is a semaphore class designed to allow multiple simultaneous reads w
     Clone the repository to your local machine using git:
 
     ```bash
-    git clone https://github.com/yourusername/WRSemaphore.git
+    git clone https://github.com/thelordofscrubs/WRSemaphore
     ```
 
     Or download the ZIP file from the repository and extract it.
